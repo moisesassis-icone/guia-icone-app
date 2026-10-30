@@ -11,8 +11,8 @@ export const PRIMEIRA_TELA = `${URL_DO_GUIA}/inicio`;
 
 /**
  * O que vai no fim do user agent. É por ele que o site sabe que está dentro do
- * app e esconde o que a Apple não deixa mostrar (preço, compra) e troca o
- * aviso do navegador pelo da Apple.
+ * app: troca a compra pelo Asaas pela da Apple (a Apple não deixa vender de
+ * outro jeito dentro do app) e o aviso do navegador pelo da Apple.
  */
 export const MARCA_DO_APP = `GuiaIconeApp/${Constants.expoConfig?.version ?? "1.0.0"}`;
 

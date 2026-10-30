@@ -77,6 +77,8 @@ const config: ExpoConfig = {
     "expo-web-browser",
     "expo-sharing",
     "expo-apple-authentication",
+    // A compra da assinatura pela Apple (StoreKit 2).
+    "expo-iap",
   ],
   extra: {
     urlDoGuia: URL_DO_GUIA,

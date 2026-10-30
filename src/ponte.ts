@@ -15,7 +15,7 @@ import Constants from "expo-constants";
  * - O tema: o app pinta a faixa do relógio e a de baixo com as cores da página.
  *
  * E deixa `window.GuiaApp` para o site pedir o que só o app faz (o aviso da
- * Apple e o "Entrar com a Apple"). O site sabe que está no app pelo `GuiaIconeApp` do user agent.
+ * Apple, o "Entrar com a Apple" e a assinatura pela Apple). O site sabe que está no app pelo `GuiaIconeApp` do user agent.
  *
  * OS ARQUIVOS VÃO EM PEDAÇOS de 3 MB (múltiplos de 3 bytes, para o base64 de
  * cada pedaço emendar no do seguinte): um vídeo do Spott inteiro numa
@@ -141,7 +141,22 @@ export function ponte(): string {
     /** O login nativo da Apple: devolve { token, nonce, nome } para o signInWithIdToken. */
     entrarComApple: function () { return pedir("apple", {}); },
     /** Abre um endereço fora do app (navegador ou o app dele). */
-    abrirFora: function (url) { enviar({ tipo: "abrir-fora", url: String(url) }); }
+    abrirFora: function (url) { enviar({ tipo: "abrir-fora", url: String(url) }); },
+    /**
+     * A assinatura pela Apple (src/assinatura.ts). Toda compra volta como
+     * { transacao, id, produto }: o site confere a transação no servidor e só
+     * então chama concluir(id). Quando chega compra sem a folha aberta (uma
+     * renovação, uma compra que ficou no meio), a página recebe o evento
+     * "guia-app-compra" e lê as pendentes.
+     */
+    assinatura: {
+      produto: function () { return pedir("assinatura-produto", {}); },
+      assinar: function (conta) { return pedir("assinatura-assinar", { conta: String(conta) }); },
+      pendentes: function () { return pedir("assinatura-pendentes", {}); },
+      concluir: function (id) { return pedir("assinatura-concluir", { id: String(id) }); },
+      restaurar: function () { return pedir("assinatura-restaurar", {}); },
+      gerenciar: function () { return pedir("assinatura-gerenciar", {}); }
+    }
   };
   window.dispatchEvent(new Event("guia-app-pronto"));
 })();

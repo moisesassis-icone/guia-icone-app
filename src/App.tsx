@@ -22,6 +22,15 @@ import { compartilhar, inicioDoArquivo, limparArquivosAntigos, pedacoDoArquivo }
 import { enderecoDoAviso, pedirAvisos } from "./avisos";
 import { entrarPelaJanelaSegura } from "./entrar";
 import { entrarComApple } from "./apple";
+import {
+  assinar,
+  comprasPendentes,
+  concluirCompra,
+  gerenciarAssinatura,
+  produtoDaAssinatura,
+  restaurar,
+  vigiarCompras,
+} from "./assinatura";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -57,6 +66,24 @@ function abrirFora(url: URL) {
   }
 }
 
+/** O que a página pediu da assinatura pela Apple (`GuiaApp.assinatura`). */
+async function pedidoDaAssinatura(msg: Record<string, unknown>): Promise<unknown> {
+  switch (msg.tipo) {
+    case "assinatura-produto":
+      return produtoDaAssinatura();
+    case "assinatura-assinar":
+      return assinar(String(msg.conta));
+    case "assinatura-pendentes":
+      return comprasPendentes();
+    case "assinatura-concluir":
+      return concluirCompra(String(msg.id));
+    case "assinatura-restaurar":
+      return restaurar();
+    default:
+      return gerenciarAssinatura();
+  }
+}
+
 function TelaDoGuia() {
   const tela = useRef<TelaWebRef>(null);
   const insets = useSafeAreaInsets();
@@ -88,6 +115,16 @@ function TelaDoGuia() {
     });
     return () => sub.remove();
   }, [abrirNoGuia]);
+
+  // A compra que chega sem a folha aberta (renovação, compra que ficou no
+  // meio): a página do Guia lê as pendentes e confirma no servidor.
+  useEffect(
+    () =>
+      vigiarCompras(() => {
+        tela.current?.injectJavaScript(`window.dispatchEvent(new Event("guia-app-compra")); true;`);
+      }),
+    []
+  );
 
   // O voltar do Android volta dentro do Guia antes de fechar o app.
   useEffect(() => {
@@ -173,6 +210,19 @@ function TelaDoGuia() {
         case "apple":
           try {
             responder(pedido, true, await entrarComApple());
+          } catch (e) {
+            const erro = e as Error;
+            responder(pedido, false, { nome: erro.name, mensagem: erro.message });
+          }
+          return;
+        case "assinatura-produto":
+        case "assinatura-assinar":
+        case "assinatura-pendentes":
+        case "assinatura-concluir":
+        case "assinatura-restaurar":
+        case "assinatura-gerenciar":
+          try {
+            responder(pedido, true, await pedidoDaAssinatura(msg));
           } catch (e) {
             const erro = e as Error;
             responder(pedido, false, { nome: erro.name, mensagem: erro.message });

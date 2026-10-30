@@ -16,8 +16,9 @@ do site.
   `producao` abre o guiaicone.com; `teste` e `simulador` abrem o
   teste.guiaicone.com.
 - Avisa o site que ele está no app pelo `GuiaIconeApp/<versão>` no fim do user
-  agent. É por ele que o site esconde preço e compra (a Apple não deixa vender
-  assinatura fora da cobrança dela) e troca o aviso do navegador pelo da Apple.
+  agent. É por ele que o site troca a compra pelo Asaas pela compra da Apple (a
+  Apple não deixa vender assinatura de outro jeito dentro do app) e o aviso do
+  navegador pelo da Apple.
 - Injeta a ponte (`src/ponte.ts`) em toda página: `navigator.share`,
   `navigator.canShare` e o `<a download>` passam a mandar os arquivos para o
   lado nativo (`src/arquivos.ts`), que abre a folha do sistema (um arquivo) ou
@@ -29,6 +30,15 @@ do site.
     `supabase.auth.signInWithIdToken({ provider: "apple", token, nonce })`
     (`src/apple.ts`).
   - `abrirFora(url)` abre fora do app.
+  - `assinatura` (`src/assinatura.ts`): `produto()` (o preço que a loja
+    mostra), `assinar(idDaConta)`, `restaurar()`, `pendentes()`,
+    `concluir(id)` e `gerenciar()`. A compra volta como transação assinada
+    pela Apple e leva o id da conta do Guia (`appAccountToken`); quem libera o
+    acesso é o servidor do Guia, que confere a transação, e só depois o site
+    chama `concluir(id)`. A compra que chega sem a folha aberta dispara o
+    evento `guia-app-compra` na página. O produto no App Store Connect é
+    `com.guiaicone.app.mensal`, e a conta está no Programa para Pequenas
+    Empresas (15% no Brasil).
 - Decide quem abre onde (`src/config.ts` e `deixarAbrir` em `src/App.tsx`): o
   Guia e o login do Instagram ficam no app (o retorno do Instagram precisa da
   sessão do Guia, e é o fluxo que a Meta revisou); o login do Google vai para a
@@ -40,7 +50,11 @@ do site.
 1. A rota `/auth/app`, que devolve a volta do Supabase para
    `guiaicone://entrar` com a mesma query, e ela na lista de endereços de volta
    do Supabase. Sem isso o login do Google não volta ao app.
-2. Dentro do app: sem preço, sem "assinar", sem link para o Asaas.
+2. Dentro do app: a tela de assinar é a da Apple (preço da loja, "Restaurar
+   compras", Termos e Privacidade), sem Asaas, cupom nem link para comprar
+   fora. O servidor confere a transação (`@apple/app-store-server-library`) e
+   recebe os avisos da Apple (App Store Server Notifications V2): assinou,
+   renovou, falhou, cancelou e reembolsou.
 3. O aviso: guardar o token do `pedirAvisos()` e mandar pelo serviço do Expo
    (`https://exp.host/--/api/v2/push/send`), com as mesmas regras do web push.
 4. O botão "Entrar com a Apple" no login e no cadastro, dentro do app, e o
