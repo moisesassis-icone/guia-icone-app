@@ -15,6 +15,7 @@ import {
   abreEmOutroApp,
   ehDoGuia,
   ehLoginDaMeta,
+  ehLoginDaVercel,
   ehLoginSocial,
 } from "./config";
 import { ponte } from "./ponte";
@@ -156,7 +157,7 @@ function TelaDoGuia() {
         return true;
       }
       if (url.protocol === "about:" || url.protocol === "blob:" || url.protocol === "data:") return true;
-      if (ehDoGuia(url) || ehLoginDaMeta(url)) return true;
+      if (ehDoGuia(url) || ehLoginDaMeta(url) || ehLoginDaVercel(url)) return true;
       if (ehLoginSocial(url)) {
         entrarPelaJanelaSegura(url).then((volta) => {
           if (volta) abrirNoGuia(volta);

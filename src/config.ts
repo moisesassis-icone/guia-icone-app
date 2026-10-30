@@ -29,6 +29,16 @@ export function ehDoGuia(url: URL): boolean {
 }
 
 /**
+ * O TESTE.GUIAICONE.COM É FECHADO PELA VERCEL: só abre para quem é da equipe
+ * dela, com o login da Vercel. No build de teste (o TestFlight), esse login
+ * fica dentro do app, senão o Guia de teste nunca abriria. O de produção não
+ * passa por ele.
+ */
+export function ehLoginDaVercel(url: URL): boolean {
+  return ORIGEM.hostname.startsWith("teste.") && (url.hostname === "vercel.com" || url.hostname.endsWith(".vercel.com"));
+}
+
+/**
  * O LOGIN DO INSTAGRAM FICA DENTRO DO APP. Ele precisa da sessão do Guia na
  * volta (`/api/instagram/retorno` sabe de quem é a conta pelo login), e a
  * janela segura do sistema não tem essa sessão. É também o fluxo que a Meta
