@@ -65,13 +65,12 @@ do site.
 ```bash
 npm install -g eas-cli
 eas login
-eas init                      # a primeira vez: cria o projeto no expo.dev
 npm run build:simulador       # o iPhone simulado, para abrir no Appetize
 npm run build:teste           # para o TestFlight, abrindo o teste.guiaicone.com
 npm run build:producao        # para a loja
 npm run enviar:producao       # manda o último build para o App Store Connect
 ```
 
-Depois do `eas init`, o `projectId` que ele mostrar entra em
-`extra.eas.projectId` no `app.config.ts`, e o id do app no App Store Connect
-entra no `ascAppId` do `eas.json`.
+O projeto no expo.dev já existe (organização `guiaicone`, projeto
+`guia-icone`) e o id dele está no `app.config.ts`. Falta o id do app no App
+Store Connect, que entra no `ascAppId` do `eas.json`.

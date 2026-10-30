@@ -16,7 +16,10 @@ const EH_TESTE = URL_DO_GUIA.includes("teste.");
  * O projeto no expo.dev. O `eas init` mostra esse id na primeira vez; ele
  * entra aqui, e é com ele que o Expo sabe para quem é cada aviso.
  */
-const ID_DO_PROJETO_NO_EXPO: string | undefined = undefined;
+const ID_DO_PROJETO_NO_EXPO = "285296b9-333a-49ac-8b09-011c3e2aca9d";
+
+/** A organização da Ícone no expo.dev, dona do projeto. */
+const DONO_NO_EXPO = "guiaicone";
 
 const config: ExpoConfig = {
   name: EH_TESTE ? "Guia Teste" : "Guia Ícone",
@@ -79,7 +82,7 @@ const config: ExpoConfig = {
     urlDoGuia: URL_DO_GUIA,
     eas: { projectId: ID_DO_PROJETO_NO_EXPO },
   },
-  owner: process.env.EXPO_OWNER,
+  owner: DONO_NO_EXPO,
 };
 
 export default config;
